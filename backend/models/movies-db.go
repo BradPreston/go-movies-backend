@@ -155,4 +155,4 @@ func (m *DBModel) All() ([]*Movie, error) {
 	}
 
 	return movies, nil
-} 
+}
