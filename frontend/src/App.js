@@ -1,9 +1,10 @@
 import React from "react"
-import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch } from "react-router-dom"
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 import Home from "./components/Home"
 import Admin from "./components/Admin"
 import Movies from "./components/Movies"
 import Genres from "./components/Genres"
+import Genre from "./components/Genre"
 import Movie from "./components/Movie"
 
 export default function App() {
@@ -44,13 +45,14 @@ export default function App() {
 							<Route path="/movies">
 								<Movies />
 							</Route>
+							<Route path="/genres/:id" component={Genre} />
 							<Route exact path="/genres">
 								<Genres />
 							</Route>
 
-							<Route exact path="/genres/drama/" render={(props) => <Genres {...props} title={`Drama`} />} />
+							{/* <Route exact path="/genres/drama/" render={(props) => <Genres {...props} title={`Drama`} />} />
 							<Route exact path="/genres/comedy/" render={(props) => <Genres {...props} title={`Comedy`} />} />
-							<Route exact path="/genres/action/" render={(props) => <Genres {...props} title={`Action`} />} />
+							<Route exact path="/genres/action/" render={(props) => <Genres {...props} title={`Action`} />} /> */}
 
 							<Route path="/admin">
 								<Admin />

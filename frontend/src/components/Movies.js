@@ -24,9 +24,9 @@ const Movies = () => {
 
 	if (error) {
 		return (
-			<div>
+			<p>
 				<strong>{error.message}</strong>
-			</div>
+			</p>
 		)
 	} else if (isLoaded) {
 		return (

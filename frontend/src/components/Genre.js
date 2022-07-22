@@ -1,31 +1,32 @@
 import React, { useState, useEffect } from "react"
 
-const Movie = (props) => {
-	const [movie, setMovie] = useState({})
+const Genre = (props) => {
+	const [genre, setGenre] = useState({})
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
-		async function fetchMovie() {
-			const res = await fetch("http://localhost:8080/v1/movies/" + props.match.params.id)
+		async function fetchGenre() {
+			const res = await fetch("http://localhost:8080/v1/genres/" + props.match.params.id)
+			console.log(res)
 			if (res.status !== 200) {
 				const err = Error("Invalid response code: " + +res.status)
 				setError(err)
 				setIsLoaded(false)
 			} else {
 				const json = await res.json()
-				setMovie(json.movie)
+				setGenre(json.genre)
 				setIsLoaded(true)
 			}
 		}
-		fetchMovie()
+		fetchGenre()
 	}, [])
 
-	if (movie.genres) {
-		movie.genres = Object.values(movie.genres)
-	} else {
-		movie.genres = []
-	}
+	// if (genre.genres) {
+	// 	genre.genres = Object.values(genre.genres)
+	// } else {
+	// 	genre.genres = []
+	// }
 
 	if (error) {
 		return (
@@ -36,11 +37,9 @@ const Movie = (props) => {
 	} else if (isLoaded) {
 		return (
 			<>
-				<h2>
-					Movie: {movie.title} ({movie.year})
-				</h2>
+				<h2>Genre: {genre.genre_name}</h2>
 
-				<div className="float-start">
+				{/* <div className="float-start">
 					<small>rating: {movie.mpaa_rating}</small>
 				</div>
 				<div className="float-end">
@@ -77,7 +76,7 @@ const Movie = (props) => {
 							<td>{movie.runtime} minutes</td>
 						</tr>
 					</tbody>
-				</table>
+				</table> */}
 			</>
 		)
 	} else {
@@ -85,4 +84,4 @@ const Movie = (props) => {
 	}
 }
 
-export default Movie
+export default Genre

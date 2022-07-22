@@ -22,17 +22,27 @@ const Genres = () => {
 		fetchGenres()
 	})
 
-	return (
-		<>
-			<h2>Genres</h2>
+	if (error) {
+		return (
+			<p>
+				<strong>Error: {error.message}</strong>
+			</p>
+		)
+	} else if (isLoaded) {
+		return (
+			<>
+				<h2>Genres</h2>
 
-			<ul>
-				{genres.map((genre) => (
-					<li key={genre.id}>{<Link to={`/genre/${genre.id}`}>{genre.genre_name}</Link>}</li>
-				))}
-			</ul>
-		</>
-	)
+				<ul>
+					{genres.map((genre) => (
+						<li key={genre.id}>{<Link to={`/genres/${genre.id}`}>{genre.genre_name}</Link>}</li>
+					))}
+				</ul>
+			</>
+		)
+	} else {
+		return <p>Loading...</p>
+	}
 }
 
 export default Genres
