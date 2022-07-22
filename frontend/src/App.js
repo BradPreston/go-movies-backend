@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link, useParams, useRouteMatch 
 import Home from "./components/Home"
 import Admin from "./components/Admin"
 import Movies from "./components/Movies"
-import Category from "./components/Category"
+import Genres from "./components/Genres"
 import Movie from "./components/Movie"
 
 export default function App() {
@@ -28,7 +28,7 @@ export default function App() {
 								</li>
 
 								<li className="list-group-item">
-									<Link to="/categories">Categories</Link>
+									<Link to="/genres">Genres</Link>
 								</li>
 
 								<li className="list-group-item">
@@ -44,13 +44,13 @@ export default function App() {
 							<Route path="/movies">
 								<Movies />
 							</Route>
-							<Route exact path="/categories">
-								<Categories />
+							<Route exact path="/genres">
+								<Genres />
 							</Route>
 
-							<Route exact path="/categories/drama/" render={(props) => <Category {...props} title={`Drama`} />} />
-							<Route exact path="/categories/comedy/" render={(props) => <Category {...props} title={`Comedy`} />} />
-							<Route exact path="/categories/action/" render={(props) => <Category {...props} title={`Action`} />} />
+							<Route exact path="/genres/drama/" render={(props) => <Genres {...props} title={`Drama`} />} />
+							<Route exact path="/genres/comedy/" render={(props) => <Genres {...props} title={`Comedy`} />} />
+							<Route exact path="/genres/action/" render={(props) => <Genres {...props} title={`Action`} />} />
 
 							<Route path="/admin">
 								<Admin />
@@ -66,24 +66,24 @@ export default function App() {
 	)
 }
 
-function Categories() {
-	const { path, url } = useRouteMatch()
+// function genres() {
+// 	const { path, url } = useRouteMatch()
 
-	return (
-		<div>
-			<h2>Categories</h2>
+// 	return (
+// 		<div>
+// 			<h2>Genres</h2>
 
-			<ul>
-				<li>
-					<Link to={`${path}/drama`}>Drama</Link>
-				</li>
-				<li>
-					<Link to={`${path}/comedy`}>Comedy</Link>
-				</li>
-				<li>
-					<Link to={`${path}/action`}>Action</Link>
-				</li>
-			</ul>
-		</div>
-	)
-}
+// 			<ul>
+// 				<li>
+// 					<Link to={`${path}/drama`}>Drama</Link>
+// 				</li>
+// 				<li>
+// 					<Link to={`${path}/comedy`}>Comedy</Link>
+// 				</li>
+// 				<li>
+// 					<Link to={`${path}/action`}>Action</Link>
+// 				</li>
+// 			</ul>
+// 		</div>
+// 	)
+// }

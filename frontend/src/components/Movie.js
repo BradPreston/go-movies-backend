@@ -6,10 +6,10 @@ const Movie = (props) => {
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
-		(async function fetchMovie() {
+		async function fetchMovie() {
 			const res = await fetch("http://localhost:8080/v1/movie/" + props.match.params.id)
 			if (res.status !== 200) {
-				const err = Error("Invalid response code: " + + res.status)
+				const err = Error("Invalid response code: " + +res.status)
 				setError(err)
 				setIsLoaded(false)
 			} else {
@@ -17,22 +17,28 @@ const Movie = (props) => {
 				setMovie(json.movie)
 				setIsLoaded(true)
 			}
-		}())
+		}
+		fetchMovie()
 	}, [])
 
 	if (movie.genres) {
 		movie.genres = Object.values(movie.genres)
 	} else {
-		movie.genres = [];
+		movie.genres = []
 	}
 
 	if (error) {
-		return <div><strong>{error.message}</strong></div>
-	}
-	else if (isLoaded) {
+		return (
+			<div>
+				<strong>{error.message}</strong>
+			</div>
+		)
+	} else if (isLoaded) {
 		return (
 			<>
-				<h2>Movie: {movie.title} ({movie.year})</h2>
+				<h2>
+					Movie: {movie.title} ({movie.year})
+				</h2>
 
 				<div className="float-start">
 					<small>rating: {movie.mpaa_rating}</small>

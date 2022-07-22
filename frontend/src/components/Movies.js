@@ -7,10 +7,10 @@ const Movies = () => {
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
-		(async function fetchMovies() {
+		async function fetchMovies() {
 			const res = await fetch("http://localhost:8080/v1/movies")
 			if (res.status !== 200) {
-				const err = Error("Invalid response code: " + + res.status)
+				const err = Error("Invalid response code: " + +res.status)
 				setError(err)
 				setIsLoaded(false)
 			} else {
@@ -18,17 +18,21 @@ const Movies = () => {
 				setMovies(json.movies)
 				setIsLoaded(true)
 			}
-		}())
+		}
+		fetchMovies()
 	}, [])
 
 	if (error) {
-		return <div><strong>{error.message}</strong></div>
-	}
-	else if (isLoaded) {
+		return (
+			<div>
+				<strong>{error.message}</strong>
+			</div>
+		)
+	} else if (isLoaded) {
 		return (
 			<>
 				<h2>Choose a movie</h2>
-	
+
 				<ul>
 					{movies &&
 						movies.map((movie) => {
@@ -44,7 +48,6 @@ const Movies = () => {
 	} else {
 		return <p>Loading...</p>
 	}
-	
 }
 
 export default Movies
