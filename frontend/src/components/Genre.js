@@ -8,7 +8,6 @@ const Genre = (props) => {
 	useEffect(() => {
 		async function fetchGenre() {
 			const res = await fetch("http://localhost:8080/v1/genres/" + props.match.params.id)
-			console.log(res)
 			if (res.status !== 200) {
 				const err = Error("Invalid response code: " + +res.status)
 				setError(err)
