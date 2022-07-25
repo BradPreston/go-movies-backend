@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
 
 const Genre = (props) => {
-	const [genre, setGenre] = useState({})
+	const [movies, setMovies] = useState({})
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [error, setError] = useState(null)
+	const [genreName, setGenreName] = useState(null)
 
 	useEffect(() => {
 		async function fetchGenre() {
@@ -14,18 +16,13 @@ const Genre = (props) => {
 				setIsLoaded(false)
 			} else {
 				const json = await res.json()
-				setGenre(json.genre)
+				setMovies(json.movies)
 				setIsLoaded(true)
+				setGenreName(props.location.genreName)
 			}
 		}
 		fetchGenre()
 	}, [])
-
-	// if (genre.genres) {
-	// 	genre.genres = Object.values(genre.genres)
-	// } else {
-	// 	genre.genres = []
-	// }
 
 	if (error) {
 		return (
@@ -36,46 +33,19 @@ const Genre = (props) => {
 	} else if (isLoaded) {
 		return (
 			<>
-				<h2>Genre: {genre.genre_name}</h2>
+				<h2>Genre: {genreName}</h2>
 
-				{/* <div className="float-start">
-					<small>rating: {movie.mpaa_rating}</small>
-				</div>
-				<div className="float-end">
-					{movie.genres.map((movie, i) => (
-						<span className="badge bg-secondary me-1" key={i}>
-							{movie}
-						</span>
-					))}
-				</div>
-				<div className="clearfix"></div>
-				<hr />
-
-				<table className="table table-compact table-striped">
-					<thead></thead>
-					<tbody>
-						<tr>
-							<td>
-								<strong>Title:</strong>
-							</td>
-							<td>{movie.title}</td>
-						</tr>
-
-						<tr>
-							<td>
-								<strong>Description:</strong>
-							</td>
-							<td>{movie.description}</td>
-						</tr>
-
-						<tr>
-							<td>
-								<strong>Runtime:</strong>
-							</td>
-							<td>{movie.runtime} minutes</td>
-						</tr>
-					</tbody>
-				</table> */}
+				{movies ? (
+					<div className="list-group">
+						{movies.map((movie) => (
+							<Link key={movie.id} to={`/movies/${movie.id}`} className="list-group-item list-group-item-action">
+								{movie.title}
+							</Link>
+						))}
+					</div>
+				) : (
+					<p>No movies in this genre</p>
+				)}
 			</>
 		)
 	} else {
