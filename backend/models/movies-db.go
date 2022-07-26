@@ -14,7 +14,7 @@ type DBModel struct {
 
 // Get returns one movie and an error, if any
 func (m *DBModel) Get(id int) (*Movie, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -61,7 +61,7 @@ func (m *DBModel) Get(id int) (*Movie, error) {
 	}
 	defer rows.Close()
 
-	genres := make(map[int]string) 
+	genres := make(map[int]string)
 	for rows.Next() {
 		var mg MovieGenre
 		err := rows.Scan(
@@ -79,11 +79,11 @@ func (m *DBModel) Get(id int) (*Movie, error) {
 	movie.MovieGenre = genres
 
 	return &movie, nil
-} 
+}
 
 // All returns all movies and an error, if any
 func (m *DBModel) All(genre ...int) ([]*Movie, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	where := ""
@@ -140,7 +140,7 @@ func (m *DBModel) All(genre ...int) ([]*Movie, error) {
 			return nil, err
 		}
 
-		genres := make(map[int]string) 
+		genres := make(map[int]string)
 		for genreRows.Next() {
 			var mg MovieGenre
 			err := genreRows.Scan(
@@ -164,7 +164,7 @@ func (m *DBModel) All(genre ...int) ([]*Movie, error) {
 }
 
 func (m *DBModel) GenresAll() ([]*Genre, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -201,153 +201,64 @@ func (m *DBModel) GenresAll() ([]*Genre, error) {
 	return genres, nil
 }
 
-// func (m *DBModel) GetMoviesByGenre(id int) ([]*Movie, error) {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-// 	defer cancel()
+// InsertMovie inserts a movie into the database
+func (m *DBModel) InsertMovie(movie Movie) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-// 	var movies []*Movie
+	stmt := `
+	INSERT INTO
+		movies (title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at)
+	VALUES
+		($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	`
 
-// 	query := `
-// 	SELECT
-// 		g.id, g.genre_name, g.created_at, g.updated_at, mg.genre_id, mg.movie_id
-// 	FROM
-// 		genres g
-// 		left join movies_genres mg (mg.genre_id = g.id)
-// 	WHERE
-// 		g.id = $1
-// 	`
+	_, err := m.DB.ExecContext(ctx, stmt,
+		movie.Title,
+		movie.Description,
+		movie.Year,
+		movie.ReleaseDate,
+		movie.Runtime,
+		movie.Rating,
+		movie.MPAARating,
+		movie.CreatedAt,
+		movie.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
 
-// 	return movies, nil
-// }
+	return nil
+}
 
+// UpdateMovie updates a movie in the database
+func (m *DBModel) UpdateMovie(movie Movie) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-// func (m *DBModel) GetMoviesByGenre(id int) ([]*Movie, error) {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-// 	defer cancel()
+	stmt := `
+	UPDATE
+		movies
+	SET
+		title = $1, description = $2, year = $3, release_date = $4, runtime = $5, rating = $6, mpaa_rating = $7, updated_at = $8
+	WHERE
+		id = $9
+	`
 
-// 	var movies []*Movie
+	_, err := m.DB.ExecContext(ctx, stmt,
+		movie.Title,
+		movie.Description,
+		movie.Year,
+		movie.ReleaseDate,
+		movie.Runtime,
+		movie.Rating,
+		movie.MPAARating,
+		movie.UpdatedAt,
+		movie.ID,
+	)
+	if err != nil {
+		return err
+	}
 
-// 	query := `
-// 	SELECT
-// 		g.id, g.genre_name, g.created_at, g.updated_at, mg.genre_id, m
-// 	FROM
-// 		genre g
-// 		left join movies_genres mg (mg.genre_id = g.id)
-// 		left join movies m (m.id = mg.movie_id)
-// 	WHERE
-// 		g.id = $1
-// 	`
-// 	rows, err := m.DB.QueryContext(ctx, query, id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		// var genre Genre
-// 		// err := rows.Scan(
-// 		// 	&genre.ID,
-// 		// 	&genre.GenreName,
-// 		// 	&genre.CreatedAt,
-// 		// 	&genre.UpdatedAt,
-// 		// )
-// 		// if err != nil {
-// 		// 	return nil, err
-// 		// }
-
-// 		var movie Movie
-// 		err := rows.Scan(
-// 			&movie.ID,
-// 			&movie.Title,
-// 			&movie.Description,
-// 			&movie.Year,
-// 			&movie.ReleaseDate,
-// 			&movie.Runtime,
-// 			&movie.Rating,
-// 			&movie.MPAARating,
-// 			&movie.CreatedAt,
-// 			&movie.UpdatedAt,
-// 		)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		movies = append(movies, &movie)
-
-// 		// mgQuery := `
-// 		// SELECT
-// 		// 	mg.id, mg.movie_id, mg.genre_id, mg.created_at, mg.updated_at, m.id
-// 		// FROM
-// 		// 	movies_genres mg
-// 		// 	left join movies m (m.id = mg.movie_id)
-// 		// WHERE
-// 		// 	mg.genre_id = $1
-// 		// `
-// 		// mgRows, err := m.DB.QueryContext(ctx, mgQuery, genre.ID)
-// 		// if err != nil {
-// 		// 	return nil, err
-// 		// }
-
-// 		// for mgRows.Next() {
-// 		// 	var mg MovieGenre
-// 		// 	err := mgRows.Scan(
-// 		// 		&mg.ID,
-// 		// 		&mg.MovieID,
-// 		// 		&mg.GenreID,
-// 		// 		&mg.CreatedAt,
-// 		// 		&mg.UpdatedAt,
-// 		// 	)
-// 		// 	if err != nil {
-// 		// 		return nil, err
-// 		// 	}
-
-// 		// 	movieQuery := `
-// 		// 	SELECT
-// 		// 		m.id, m.title, m.description, m.year, m.release_date, m.runtime, m.rating, m.mpaa_rating, m.created_at, m.updated_at, mg.movie_id
-// 		// 	FROM
-// 		// 		movies m
-// 		// 		left join movies_genres mg (mg.movie_id = m.id)
-// 		// 	WHERE
-// 		// 		m.id = $1
-// 		// 	`
-
-// 		// 	// movieQuery := `
-// 		// 	// SELECT
-// 		// 	// 	id, title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at
-// 		// 	// FROM
-// 		// 	// 	movies
-// 		// 	// WHERE
-// 		// 	// 	id = $1
-// 		// 	// `
-
-// 		// 	movieRows, err := m.DB.QueryContext(ctx, movieQuery, mg.MovieID)
-// 		// 	if err != nil {
-// 		// 		return nil, err
-// 		// 	}
-// 		// 	for movieRows.Next() {
-// 		// 		var movie Movie
-
-// 		// 		err := rows.Scan(
-// 		// 			&movie.ID,
-// 		// 			&movie.Title,
-// 		// 			&movie.Description,
-// 		// 			&movie.Year,
-// 		// 			&movie.ReleaseDate,
-// 		// 			&movie.Runtime,
-// 		// 			&movie.Rating,
-// 		// 			&movie.MPAARating,
-// 		// 			&movie.CreatedAt,
-// 		// 			&movie.UpdatedAt,
-// 		// 		)
-// 		// 		if err != nil {
-// 		// 			return nil, err
-// 		// 		}
-
-// 		// 		movies = append(movies, &movie)
-// 		// 	}
-// 		// 	defer movieRows.Close()
-// 		// }
-// 		// defer mgRows.Close()
-// 	}
-// 	return movies, nil
-// }
+	return nil
+}

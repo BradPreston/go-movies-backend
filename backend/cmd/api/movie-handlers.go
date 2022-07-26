@@ -1,12 +1,20 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/BradPreston/go-movies/backend/models"
 	"github.com/julienschmidt/httprouter"
 )
+
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
 
 // getOneMovie gets a single movie from the database
 func (app *application) getOneMovie(w http.ResponseWriter, r *http.Request) {
@@ -85,17 +93,90 @@ func (app *application) deleteMovie(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type MoviePayload struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Year        string `json:"year"`
+	ReleaseDate string `json:"release_date"`
+	Runtime     string `json:"runtime"`
+	Rating      string `json:"rating"`
+	MPAARating  string `json:"mpaa_rating"`
+}
+
 // updateMovie updates a movie in the database
 func (app *application) editMovie(w http.ResponseWriter, r *http.Request) {
-	type jsonResponse struct {
-		OK bool `json:"ok"`
+	var payload MoviePayload
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	var movie models.Movie
+
+	if payload.ID != "0" {
+		id, err := strconv.Atoi(payload.ID)
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+
+		m, err := app.models.DB.Get(id)
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+
+		movie = *m
+		movie.UpdatedAt = time.Now()
+	}
+
+	movie.ID, err = strconv.Atoi(payload.ID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	movie.Title = payload.Title
+	movie.Description = payload.Description
+	movie.ReleaseDate, err = time.Parse("2006-01-02", payload.ReleaseDate)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	movie.Year = movie.ReleaseDate.Year()
+	movie.Runtime, err = strconv.Atoi(payload.Runtime)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	movie.Rating, err = strconv.Atoi(payload.Rating)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	movie.MPAARating = payload.MPAARating
+	movie.CreatedAt = time.Now()
+	movie.UpdatedAt = time.Now()
+
+	if movie.ID == 0 {
+		if err = app.models.DB.InsertMovie(movie); err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+	} else {
+		if err = app.models.DB.UpdateMovie(movie); err != nil {
+			app.errorJSON(w, err)
+			return
+		}
 	}
 
 	ok := jsonResponse{
 		OK: true,
 	}
 
-	err := app.writeJSON(w, http.StatusOK, ok, "response")
+	err = app.writeJSON(w, http.StatusOK, ok, "response")
 	if err != nil {
 		app.errorJSON(w, err)
 		return

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import Input from "./form-components/Input"
 import Textarea from "./form-components/Textarea"
 import Select from "./form-components/Select"
+import Alert from "./ui/Alert"
 import "./EditMovie.css"
 
 export default function EditMovie(props) {
@@ -24,6 +25,10 @@ export default function EditMovie(props) {
 	const [error, setError] = useState(null)
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [errors, setErrors] = useState([])
+	const [alert, setAlert] = useState({
+		type: "d-none",
+		message: ""
+	})
 
 	const ratings = [
 		{
@@ -75,6 +80,17 @@ export default function EditMovie(props) {
 		const res = await fetch("http://localhost:8080/v1/admin/editmovie", options)
 		const json = await res.json()
 		console.log(json)
+		if (json.error) {
+			setAlert({
+				type: "alert-danger",
+				message: json.error.message,
+			})
+		} else {
+			setAlert({
+				type: "alert-success",
+				message: "Changes saved",
+			})
+		}
 	}
 
 	function hasError(key) {
@@ -90,7 +106,7 @@ export default function EditMovie(props) {
 				const err = Error
 				err.message = "Invalid response code: " + res.status
 				setError(err)
-				setIsLoaded(true)
+				setIsLoaded(true);
 			} else {
 				const json = await res.json()
 				const releaseDate = new Date(json.movie.release_date)
@@ -114,7 +130,7 @@ export default function EditMovie(props) {
 		return (
 			<>
 				<h2>Add/Edit Movie</h2>
-
+				<Alert type={alert.type} message={alert.message} />
 				<hr />
 
 				<form method="post" onSubmit={handleSubmit}>

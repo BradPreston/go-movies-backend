@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/BradPreston/go-movies/backend/models"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -18,16 +19,16 @@ const version = "1.0.0"
 
 type config struct {
 	port int
-	env string
-	db struct {
+	env  string
+	db   struct {
 		dsn string
 	}
 }
 
 type AppStatus struct {
-	Status string `json:"status"`
+	Status      string `json:"status"`
 	Environment string `json:"environment"`
-	Version string `json:"version"`
+	Version     string `json:"version"`
 }
 
 type application struct {
@@ -38,13 +39,17 @@ type application struct {
 
 func main() {
 	var cfg config
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+
+	env, err := godotenv.Read(".env")
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	flag.IntVar(&cfg.port, "port", 8080, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment (development|production)")
-	flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres@localhost/go_movies?sslmode=disable", "Postgres connection string")
+	flag.StringVar(&cfg.db.dsn, "dsn", fmt.Sprintf("postgres://%s:%s@localhost/go_movies?sslmode=disable", env["USER"], env["PASSWORD"]), "Postgres connection string")
 	flag.Parse()
-
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
 	db, err := openDB(cfg)
 	if err != nil {
@@ -61,10 +66,10 @@ func main() {
 	fmt.Println("Running")
 
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%d", cfg.port),
-		Handler: app.routes(),
-		IdleTimeout: time.Minute,
-		ReadTimeout: 10 * time.Second,
+		Addr:         fmt.Sprintf(":%d", cfg.port),
+		Handler:      app.routes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
 
@@ -81,7 +86,7 @@ func openDB(cfg config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err = db.PingContext(ctx); err != nil {
