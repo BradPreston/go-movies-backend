@@ -4,7 +4,7 @@ export default function Select(props) {
 			<label htmlFor={props.name} className="form-label">
 				{props.title}
 			</label>
-			<select className="form-select" id={props.name} name={props.name} value={props.value} onChange={props.setValue}>
+			<select className={`form-control ${props.className}`} id={props.name} name={props.name} value={props.value} onChange={props.setValue}>
 				<option className="form-select" value="">
 					{props.placeholder}
 				</option>
@@ -14,6 +14,7 @@ export default function Select(props) {
 					</option>
 				))}
 			</select>
+			<div className={props.errorDiv}>{props.errorMsg}</div>
 		</div>
 	)
 }

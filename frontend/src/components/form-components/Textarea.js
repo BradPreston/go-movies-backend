@@ -4,7 +4,8 @@ export default function Textarea(props) {
 			<label htmlFor={props.name} className="form-label">
 				{props.title}
 			</label>
-			<textarea id={props.name} name={props.name} className="form-control" value={props.value} rows={props.rows} onChange={props.setValue} />
+			<textarea id={props.name} name={props.name} className={`form-control ${props.className}`} value={props.value} rows={props.rows} onChange={props.setValue} />
+			<div className={props.errorDiv}>{props.errorMsg}</div>
 		</div>
 	)
 }

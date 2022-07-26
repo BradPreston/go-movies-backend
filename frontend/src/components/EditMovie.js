@@ -23,6 +23,7 @@ export default function EditMovie(props) {
 	})
 	const [error, setError] = useState(null)
 	const [isLoaded, setIsLoaded] = useState(false)
+	const [errors, setErrors] = useState([])
 
 	const ratings = [
 		{
@@ -49,15 +50,19 @@ export default function EditMovie(props) {
 
 	async function handleSubmit(e) {
 		e.preventDefault()
-		// setMovie({
-		// 	id: movieID,
-		// 	title: movieTitle,
-		// 	release_date: movieReleaseDate,
-		// 	runtime: movieRuntime,
-		// 	mpaa_rating: movieMpaaRating,
-		// 	rating: movieRating,
-		// 	description: movieDescription,
-		// })
+
+		// client side validation
+		const validationErrors = []
+		if (movieTitle === "") validationErrors.push("title")
+		if (movieReleaseDate === "") validationErrors.push("release_date")
+		if (movieRuntime === "") validationErrors.push("runtime")
+		if (movieMpaaRating === "") validationErrors.push("mpaa_rating")
+		if (movieRating === "") validationErrors.push("rating")
+		if (movieDescription === "") validationErrors.push("description")
+
+		setErrors(validationErrors)
+
+		if (errors.length > 0) return false
 
 		const data = new FormData(e.target)
 		const payload = Object.fromEntries(data.entries())
@@ -70,6 +75,10 @@ export default function EditMovie(props) {
 		const res = await fetch("http://localhost:8080/v1/admin/editmovie", options)
 		const json = await res.json()
 		console.log(json)
+	}
+
+	function hasError(key) {
+		return errors.indexOf(key) !== -1
 	}
 
 	useEffect(() => {
@@ -110,12 +119,67 @@ export default function EditMovie(props) {
 
 				<form method="post" onSubmit={handleSubmit}>
 					<Input name="id" type="hidden" value={movieID} setValue={(e) => setMovieID(e.target.value)} />
-					<Input name="title" title="Title" type="text" value={movieTitle} setValue={(e) => setMovieTitle(e.target.value)} />
-					<Input name="release_date" title="Release Date" type="text" value={movieReleaseDate} setValue={(e) => setMovieReleaseDate(e.target.value)} />
-					<Input name="runtime" title="Runtime" type="text" value={movieRuntime} setValue={(e) => setMovieRuntime(e.target.value)} />
-					<Select name="mpaa_rating" title="MPAA Rating" value={movieMpaaRating} setValue={(e) => setMovieMpaaRating(e.target.value)} placeholder="Choose..." options={ratings} />
-					<Input name="rating" title="Rating" type="text" value={movieRating} setValue={(e) => setMovieRating(e.target.value)} />
-					<Textarea name="description" title="Description" rows="3" value={movieDescription} setValue={(e) => setMovieDescription(e.target.value)} />
+					<Input
+						name="title"
+						title="Title"
+						type="text"
+						value={movieTitle}
+						setValue={(e) => setMovieTitle(e.target.value)}
+						className={hasError("title") ? "is-invalid" : ""}
+						errorDiv={hasError("title") ? "text-danger" : "d-none"}
+						errorMsg={"Please enter a title"}
+					/>
+					<Input
+						name="release_date"
+						title="Release Date"
+						type="text"
+						value={movieReleaseDate}
+						setValue={(e) => setMovieReleaseDate(e.target.value)}
+						className={hasError("release_date") ? "is-invalid" : ""}
+						errorDiv={hasError("release_date") ? "text-danger" : "d-none"}
+						errorMsg={"Please enter a release date"}
+					/>
+					<Input
+						name="runtime"
+						title="Runtime"
+						type="text"
+						value={movieRuntime}
+						setValue={(e) => setMovieRuntime(e.target.value)}
+						className={hasError("runtime") ? "is-invalid" : ""}
+						errorDiv={hasError("runtime") ? "text-danger" : "d-none"}
+						errorMsg={"Please enter a runtime"}
+					/>
+					<Select
+						name="mpaa_rating"
+						title="MPAA Rating"
+						value={movieMpaaRating}
+						setValue={(e) => setMovieMpaaRating(e.target.value)}
+						placeholder="Choose..."
+						options={ratings}
+						className={hasError("mpaa_rating") ? "is-invalid" : ""}
+						errorDiv={hasError("mpaa_rating") ? "text-danger" : "d-none"}
+						errorMsg={"Please choose an MPAA rating"}
+					/>
+					<Input
+						name="rating"
+						title="Rating"
+						type="text"
+						value={movieRating}
+						setValue={(e) => setMovieRating(e.target.value)}
+						className={hasError("rating") ? "is-invalid" : ""}
+						errorDiv={hasError("rating") ? "text-danger" : "d-none"}
+						errorMsg={"Please enter a rating"}
+					/>
+					<Textarea
+						name="description"
+						title="Description"
+						rows="3"
+						value={movieDescription}
+						setValue={(e) => setMovieDescription(e.target.value)}
+						className={hasError("description") ? "is-invalid" : ""}
+						errorDiv={hasError("description") ? "text-danger" : "d-none"}
+						errorMsg={"Please enter a description"}
+					/>
 
 					<hr />
 
