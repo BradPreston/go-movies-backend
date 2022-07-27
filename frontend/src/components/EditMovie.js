@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react"
+import { Link } from 'react-router-dom'
+import { confirmAlert } from 'react-confirm-alert'
 import Input from "./form-components/Input"
 import Textarea from "./form-components/Textarea"
 import Select from "./form-components/Select"
 import Alert from "./ui/Alert"
 import "./EditMovie.css"
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 export default function EditMovie(props) {
 	const [movieID, setMovieID] = useState(0)
@@ -13,15 +16,6 @@ export default function EditMovie(props) {
 	const [movieMpaaRating, setMovieMpaaRating] = useState("")
 	const [movieRating, setMovieRating] = useState("")
 	const [movieDescription, setMovieDescription] = useState("")
-	const [movie, setMovie] = useState({
-		id: movieID,
-		title: movieTitle,
-		release_date: movieReleaseDate,
-		runtime: movieRuntime,
-		mpaa_rating: movieMpaaRating,
-		rating: movieRating,
-		description: movieDescription,
-	})
 	const [error, setError] = useState(null)
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [errors, setErrors] = useState([])
@@ -97,6 +91,34 @@ export default function EditMovie(props) {
 		return errors.indexOf(key) !== -1
 	}
 
+	function confirmDelete(e) {
+		confirmAlert({
+			title: "Delete movie?",
+			message: "Are you sure?",
+			buttons: [
+				{
+					label: "Yes",
+					onClick: async () => {
+						const res = await fetch("http://localhost:8080/v1/admin/deletemovie/" + movieID, { method: "GET" })
+						const json = await res.json()
+
+						if (json.error) {
+							setAlert({ type: "alert-danger", message: json.error.message })
+						} else {
+							props.history.push({
+								pathname: "/admin",
+							})
+						}
+					}
+				},
+				{
+					label: "No",
+					onClick: () => {}
+				}
+			]
+		})
+	}
+
 	useEffect(() => {
 		const id = props.match.params.id
 
@@ -134,7 +156,7 @@ export default function EditMovie(props) {
 				<hr />
 
 				<form method="post" onSubmit={handleSubmit}>
-					<Input name="id" type="hidden" value={movieID} setValue={(e) => setMovieID(e.target.value)} />
+					<Input name="id" type="hidden" value={movieID} setValue={(e) => setMovieID(props.match.params.id)} />
 					<Input
 						name="title"
 						title="Title"
@@ -199,7 +221,17 @@ export default function EditMovie(props) {
 
 					<hr />
 
-					<button className="btn btn-primary">Save</button>
+					<div style={{display: "flex", justifyContent: "space-between"}}>
+						<div>
+							<button className="btn btn-primary">Save</button>
+							<Link to="/admin" className="btn btn-warning ms-1">Cancel</Link>
+						</div>
+						<div>
+							{movieID > 0 && (
+								<a href="#!" onClick={() => confirmDelete()} className="btn btn-danger">Delete</a>
+							)}
+						</div>
+					</div>
 				</form>
 			</>
 		)

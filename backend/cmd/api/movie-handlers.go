@@ -90,7 +90,27 @@ func (app *application) getAllMoviesByGenre(w http.ResponseWriter, r *http.Reque
 
 // deleteMovie deletes a movie from the database
 func (app *application) deleteMovie(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
 
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	if err = app.models.DB.DeleteMovie(id); err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	ok := jsonResponse{
+		OK: true,
+	}
+
+	if err = app.writeJSON(w, http.StatusOK, ok, "response"); err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 }
 
 type MoviePayload struct {
@@ -140,7 +160,7 @@ func (app *application) editMovie(w http.ResponseWriter, r *http.Request) {
 	}
 	movie.Title = payload.Title
 	movie.Description = payload.Description
-	movie.ReleaseDate, err = time.Parse("2006-01-02", payload.ReleaseDate)
+	movie.ReleaseDate, err = time.Parse("01-02-2006", payload.ReleaseDate)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
