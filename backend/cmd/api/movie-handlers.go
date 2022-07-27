@@ -121,7 +121,7 @@ type MoviePayload struct {
 	ReleaseDate string `json:"release_date"`
 	Runtime     string `json:"runtime"`
 	Rating      string `json:"rating"`
-	MPAARating  string `json:"mpaa_rating"`
+	MPAARating 	string `json:"mpaa_rating"`
 }
 
 // updateMovie updates a movie in the database
@@ -160,7 +160,7 @@ func (app *application) editMovie(w http.ResponseWriter, r *http.Request) {
 	}
 	movie.Title = payload.Title
 	movie.Description = payload.Description
-	movie.ReleaseDate, err = time.Parse("01-02-2006", payload.ReleaseDate)
+	movie.ReleaseDate, err = time.Parse("2006-01-02", payload.ReleaseDate)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react"
-import { Link } from 'react-router-dom'
-import { confirmAlert } from 'react-confirm-alert'
+import { Link } from "react-router-dom"
+import { confirmAlert } from "react-confirm-alert"
 import Input from "./form-components/Input"
 import Textarea from "./form-components/Textarea"
 import Select from "./form-components/Select"
 import Alert from "./ui/Alert"
 import "./EditMovie.css"
-import 'react-confirm-alert/src/react-confirm-alert.css'
+import "react-confirm-alert/src/react-confirm-alert.css"
 
 export default function EditMovie(props) {
 	const [movieID, setMovieID] = useState(0)
@@ -21,7 +21,7 @@ export default function EditMovie(props) {
 	const [errors, setErrors] = useState([])
 	const [alert, setAlert] = useState({
 		type: "d-none",
-		message: ""
+		message: "",
 	})
 
 	const ratings = [
@@ -80,9 +80,23 @@ export default function EditMovie(props) {
 				message: json.error.message,
 			})
 		} else {
-			setAlert({
-				type: "alert-success",
-				message: "Changes saved",
+			confirmAlert({
+				title: "Save changes?",
+				message: "Are you sure?",
+				buttons: [
+					{
+						label: "Yes",
+						onClick: async () => {
+							props.history.push({
+								pathname: "/admin",
+							})
+						},
+					},
+					{
+						label: "No",
+						onClick: () => {},
+					},
+				],
 			})
 		}
 	}
@@ -109,17 +123,17 @@ export default function EditMovie(props) {
 								pathname: "/admin",
 							})
 						}
-					}
+					},
 				},
 				{
 					label: "No",
-					onClick: () => {}
-				}
-			]
+					onClick: () => {},
+				},
+			],
 		})
 	}
 
-	useEffect(() => {
+	useEffect((props) => {
 		const id = props.match.params.id
 
 		async function fetchMovie(id) {
@@ -128,7 +142,7 @@ export default function EditMovie(props) {
 				const err = Error
 				err.message = "Invalid response code: " + res.status
 				setError(err)
-				setIsLoaded(true);
+				setIsLoaded(true)
 			} else {
 				const json = await res.json()
 				const releaseDate = new Date(json.movie.release_date)
@@ -221,14 +235,18 @@ export default function EditMovie(props) {
 
 					<hr />
 
-					<div style={{display: "flex", justifyContent: "space-between"}}>
+					<div style={{ display: "flex", justifyContent: "space-between" }}>
 						<div>
 							<button className="btn btn-primary">Save</button>
-							<Link to="/admin" className="btn btn-warning ms-1">Cancel</Link>
+							<Link to="/admin" className="btn btn-warning ms-1">
+								Cancel
+							</Link>
 						</div>
 						<div>
 							{movieID > 0 && (
-								<a href="#!" onClick={() => confirmDelete()} className="btn btn-danger">Delete</a>
+								<a href="#!" onClick={() => confirmDelete()} className="btn btn-danger">
+									Delete
+								</a>
 							)}
 						</div>
 					</div>
