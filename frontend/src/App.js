@@ -8,6 +8,7 @@ import Genre from "./components/Genre"
 import Movie from "./components/Movie"
 import EditMovie from "./components/EditMovie"
 import Login from "./components/Login"
+import GraphQL from "./components/GraphQL"
 
 export default function App() {
 	const [jwt, setJwt] = useState("")
@@ -74,6 +75,9 @@ export default function App() {
 										</li>
 									</>
 								)}
+								<li className="list-group-item">
+									<Link to="/graphql">GraphQL</Link>
+								</li>
 							</ul>
 						</nav>
 					</div>
@@ -92,6 +96,10 @@ export default function App() {
 							<Route exact path="/login" component={(props) => <Login {...props} handleJwt={(props) => setJwt(props)} />} />
 
 							<Route path="/admin/movie/:id" component={(props) => <EditMovie {...props} jwt={jwt} handleJwt={(props) => setJwt(props)} />} />
+
+							<Route exact path="/graphql">
+								<GraphQL />
+							</Route>
 
 							<Route exact path="/admin" component={(props) => <Admin {...props} jwt={jwt} />} />
 							<Route path="/">
