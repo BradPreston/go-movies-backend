@@ -23,19 +23,19 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-func (app *application) SignIn(w http.ResponseWriter, r *http.Request) {
+func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		app.errorJSON(w, errors.New("Unauthorized"))
+		app.errorJSON(w, errors.New("unauthorized"))
 		return
 	}
 
 	hashedPassword := validUser.Password
 
 	if err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(creds.Password)); err != nil {
-		app.errorJSON(w, errors.New("Unauthorized"))
+		app.errorJSON(w, errors.New("password does not match our records"))
 		return
 	}
 
