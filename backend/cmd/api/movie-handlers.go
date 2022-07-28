@@ -121,7 +121,7 @@ type MoviePayload struct {
 	ReleaseDate string `json:"release_date"`
 	Runtime     string `json:"runtime"`
 	Rating      string `json:"rating"`
-	MPAARating 	string `json:"mpaa_rating"`
+	MPAARating  string `json:"mpaa_rating"`
 }
 
 // updateMovie updates a movie in the database
@@ -204,6 +204,6 @@ func (app *application) editMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 // searchMovies searches for a movie in the database
-func (app *application) searchMovies(w http.ResponseWriter, r *http.Request) {
+// func (app *application) searchMovies(w http.ResponseWriter, r *http.Request) {
 
-}
+// }
