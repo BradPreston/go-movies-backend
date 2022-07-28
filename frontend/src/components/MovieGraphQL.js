@@ -1,23 +1,46 @@
 import React, { useState, useEffect } from "react"
 
-const Movie = (props) => {
+const MovieGraphQL = (props) => {
 	const [movie, setMovie] = useState({})
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
+		const payload = `
+        {
+            movie(id: ${props.match.params.id}) {
+                id
+                title
+                runtime
+                year
+                description
+                mpaa_rating
+            }
+        }
+        `
+
+		const headers = new Headers()
+		headers.append("Content-Type", "application/json")
+
+		const options = {
+			method: "POST",
+			body: payload,
+			headers: headers,
+		}
+
 		async function fetchMovie() {
-			const res = await fetch("http://localhost:8080/v1/movies/" + props.match.params.id)
+			const res = await fetch("http://localhost:8080/v1/graphql", options)
 			if (res.status !== 200) {
 				const err = Error("Invalid response code: " + +res.status)
 				setError(err)
 				setIsLoaded(false)
 			} else {
-				const json = await res.json()
-				setMovie(json.movie)
+				const data = await res.json()
+				setMovie(data.data.movie)
 				setIsLoaded(true)
 			}
 		}
+
 		fetchMovie()
 	}, [props.match.params.id])
 
@@ -85,4 +108,4 @@ const Movie = (props) => {
 	}
 }
 
-export default Movie
+export default MovieGraphQL

@@ -9,6 +9,7 @@ import Movie from "./components/Movie"
 import EditMovie from "./components/EditMovie"
 import Login from "./components/Login"
 import GraphQL from "./components/GraphQL"
+import MovieGraphQL from "./components/MovieGraphQL"
 
 export default function App() {
 	const [jwt, setJwt] = useState("")
@@ -85,6 +86,7 @@ export default function App() {
 					<div className="col-md-10">
 						<Switch>
 							<Route path="/movies/:id" component={Movie} />
+							<Route path="/moviesgraphql/:id" component={(props) => <MovieGraphQL {...props} />} />
 							<Route path="/movies">
 								<Movies />
 							</Route>
