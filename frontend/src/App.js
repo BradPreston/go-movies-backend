@@ -76,11 +76,9 @@ export default function App() {
 
 							<Route exact path="/login" component={(props) => <Login {...props} handleJwt={(props) => setJwt(props)} />} />
 
-							<Route path="/admin/movie/:id" component={EditMovie} />
+							<Route path="/admin/movie/:id" component={(props) => <EditMovie {...props} jwt={jwt} handleJwt={(props) => setJwt(props)} />} />
 
-							<Route path="/admin">
-								<Admin />
-							</Route>
+							<Route exact path="/admin" component={(props) => <Admin {...props} jwt={jwt} />} />
 							<Route path="/">
 								<Home />
 							</Route>

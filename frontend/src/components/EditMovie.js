@@ -65,10 +65,14 @@ export default function EditMovie(props) {
 
 		const data = new FormData(e.target)
 		const payload = Object.fromEntries(data.entries())
+		const headers = new Headers()
+		headers.append("Content-Type", "application/json")
+		headers.append("Authorization", `Bearer ${props.jwt}`)
 
 		const options = {
 			method: "POST",
 			body: JSON.stringify(payload),
+			headers: headers,
 		}
 
 		const res = await fetch("http://localhost:8080/v1/admin/editmovie", options)
@@ -106,6 +110,8 @@ export default function EditMovie(props) {
 	}
 
 	function confirmDelete(e) {
+		e.preventDefault()
+
 		confirmAlert({
 			title: "Delete movie?",
 			message: "Are you sure?",
@@ -113,7 +119,14 @@ export default function EditMovie(props) {
 				{
 					label: "Yes",
 					onClick: async () => {
-						const res = await fetch("http://localhost:8080/v1/admin/deletemovie/" + movieID, { method: "GET" })
+						const headers = new Headers()
+						headers.append("Content-Type", "application/json")
+						headers.append("Authorization", `Bearer ${props.jwt}`)
+
+						const res = await fetch("http://localhost:8080/v1/admin/deletemovie/" + movieID, {
+							method: "GET",
+							headers: headers,
+						})
 						const json = await res.json()
 
 						if (json.error) {
@@ -133,9 +146,11 @@ export default function EditMovie(props) {
 		})
 	}
 
-	useEffect((props) => {
+	useEffect(() => {
+		if (props.jwt === "") {
+			props.history.push({ pathname: "/login" })
+		}
 		const id = props.match.params.id
-
 		async function fetchMovie(id) {
 			const res = await fetch("http://localhost:8080/v1/movies/" + id)
 			if (res.status !== 200) {
@@ -158,7 +173,7 @@ export default function EditMovie(props) {
 		}
 
 		if (id > 0) fetchMovie(id)
-	}, [])
+	}, [props.history, props.jwt, props.match.params.id])
 
 	if (error) {
 		return <p>Could not get movie</p>

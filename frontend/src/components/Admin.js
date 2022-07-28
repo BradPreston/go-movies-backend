@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
-const Admin = () => {
+const Admin = (props) => {
 	const [movies, setMovies] = useState([])
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
+		if (props.jwt === "") {
+			props.history.push({ pathname: "/login" })
+		}
 		async function fetchMovies() {
 			const res = await fetch("http://localhost:8080/v1/movies")
 			if (res.status !== 200) {
@@ -20,7 +23,7 @@ const Admin = () => {
 			}
 		}
 		fetchMovies()
-	})
+	}, [props.history, props.jwt])
 
 	if (error) {
 		return (
