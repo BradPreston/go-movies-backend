@@ -12,7 +12,6 @@ import Login from "./components/Login"
 export default function App() {
 	const [jwt, setJwt] = useState("")
 
-	const logout = () => setJwt("")
 	let loginLink
 	if (jwt === "") loginLink = <Link to="/login">Login</Link>
 	else
