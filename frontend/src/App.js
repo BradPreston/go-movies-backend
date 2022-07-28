@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 import Home from "./components/Home"
 import Admin from "./components/Admin"
@@ -16,10 +16,25 @@ export default function App() {
 	if (jwt === "") loginLink = <Link to="/login">Login</Link>
 	else
 		loginLink = (
-			<Link to="/logout" onClick={() => setJwt("")}>
+			<Link
+				to="/logout"
+				onClick={() => {
+					setJwt("")
+					window.localStorage.removeItem("jwt")
+				}}
+			>
 				Logout
 			</Link>
 		)
+
+	useEffect(() => {
+		const token = window.localStorage.getItem("jwt")
+		if (token !== null) {
+			if (jwt === "") {
+				setJwt(JSON.parse(token))
+			}
+		}
+	}, [setJwt, jwt])
 
 	return (
 		<Router>

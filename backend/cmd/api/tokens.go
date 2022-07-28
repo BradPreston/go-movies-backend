@@ -28,7 +28,7 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		app.errorJSON(w, errors.New("unauthorized"))
+		app.errorJSON(w, errors.New("unauthorized"), http.StatusUnauthorized)
 		return
 	}
 
