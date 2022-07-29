@@ -19,7 +19,7 @@ func (m *DBModel) Get(id int) (*Movie, error) {
 
 	query := `
 	SELECT
-		id, title, description, year, release_date, rating, runtime, mpaa_rating, created_at, updated_at
+		id, title, description, year, release_date, rating, runtime, mpaa_rating, created_at, updated_at, coalesce(poster, '')
 	FROM
 		movies
 	WHERE
@@ -40,6 +40,7 @@ func (m *DBModel) Get(id int) (*Movie, error) {
 		&movie.MPAARating,
 		&movie.CreatedAt,
 		&movie.UpdatedAt,
+		&movie.Poster,
 	)
 	if err != nil {
 		return nil, err
@@ -93,7 +94,7 @@ func (m *DBModel) All(genre ...int) ([]*Movie, error) {
 
 	query := fmt.Sprintf(`
 	SELECT
-		id, title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at
+		id, title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at, coalesce(poster, '')
 	FROM
 		movies %s
 	ORDER BY
@@ -120,6 +121,7 @@ func (m *DBModel) All(genre ...int) ([]*Movie, error) {
 			&movie.MPAARating,
 			&movie.CreatedAt,
 			&movie.UpdatedAt,
+			&movie.Poster,
 		)
 		if err != nil {
 			return nil, err
@@ -208,9 +210,9 @@ func (m *DBModel) InsertMovie(movie Movie) error {
 
 	stmt := `
 	INSERT INTO
-		movies (title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at)
+		movies (title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at, poster)
 	VALUES
-		($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
@@ -223,6 +225,7 @@ func (m *DBModel) InsertMovie(movie Movie) error {
 		movie.MPAARating,
 		movie.CreatedAt,
 		movie.UpdatedAt,
+		movie.Poster,
 	)
 	if err != nil {
 		return err
@@ -240,9 +243,9 @@ func (m *DBModel) UpdateMovie(movie Movie) error {
 	UPDATE
 		movies
 	SET
-		title = $1, description = $2, year = $3, release_date = $4, runtime = $5, rating = $6, mpaa_rating = $7, updated_at = $8
+		title = $1, description = $2, year = $3, release_date = $4, runtime = $5, rating = $6, mpaa_rating = $7, updated_at = $8, poster = $9
 	WHERE
-		id = $9
+		id = $10
 	`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
@@ -254,6 +257,7 @@ func (m *DBModel) UpdateMovie(movie Movie) error {
 		movie.Rating,
 		movie.MPAARating,
 		movie.UpdatedAt,
+		movie.Poster,
 		movie.ID,
 	)
 	if err != nil {

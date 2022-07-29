@@ -36,25 +36,37 @@ export default function GraphQL(props) {
 			const data = await res.json()
 			const movieList = Object.values(data.data.list)
 			setMovies(movieList)
+			setIsLoaded(true)
 		}
 
 		fetchMovies()
+	}, [])
 
-		handleSearch(searchTerm)
-	}, [searchTerm])
+	const handleSearch = (e) => {
+		e.preventDefault()
 
-	function handleSearch(searchTerm) {
+		let term = ""
+		if (searchTerm === "") {
+			term = searchTerm
+		} else if (searchTerm.split(" ")) {
+			searchTerm.split(" ").forEach((word) => {
+				term += word[0].toUpperCase() + word.substring(1) + " "
+			})
+		} else {
+			term = searchTerm[0].toUpperCase() + searchTerm.substring(1)
+		}
+
 		const payload = `
-        {
-            search(titleContains: "${searchTerm}") {
-                id
-                title
-                runtime
-                year
-                description
-            }
-        }
-        `
+	    {
+	        search(titleContains: "${term}") {
+	            id
+	            title
+	            runtime
+	            year
+	            description
+	        }
+	    }
+	    `
 
 		const headers = new Headers()
 		headers.append("Content-Type", "application/json")
@@ -82,6 +94,7 @@ export default function GraphQL(props) {
 
 		fetchMovies()
 	}
+
 	if (error) {
 		return (
 			<p>
@@ -93,7 +106,14 @@ export default function GraphQL(props) {
 			<>
 				<h2>GraphQL</h2>
 				<hr />
-				<Input title="search" type="text" name="search" value={searchTerm} setValue={(e) => setSearchTerm(e.target.value)} placeholder="Search by movie title" />
+				<form style={{ display: "flex", flexDirection: "row", alignContent: "center" }} onSubmit={handleSearch}>
+					<Input title="search" type="text" name="search" value={searchTerm} setValue={(e) => setSearchTerm(e.target.value)} placeholder="Search by movie title" />
+					{/* <div style={{ display: "flex", alignContent: "center" }}> */}
+					<button className="btn btn-primary" style={{ height: "38px", marginTop: "31px", marginLeft: "10px" }}>
+						Submit
+					</button>
+					{/* </div> */}
+				</form>
 				<div className="list-group">
 					{movies.map((movie) => (
 						<Link key={movie.id} className="list-group-item list-group-item-aciton" to={`/moviesgraphql/${movie.id}`}>

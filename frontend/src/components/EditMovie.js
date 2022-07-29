@@ -153,11 +153,12 @@ export default function EditMovie(props) {
 		const id = props.match.params.id
 		async function fetchMovie(id) {
 			const res = await fetch("http://localhost:8080/v1/movies/" + id)
+			console.log(res)
 			if (res.status !== 200) {
 				const err = Error
 				err.message = "Invalid response code: " + res.status
 				setError(err)
-				setIsLoaded(true)
+				setIsLoaded(false)
 			} else {
 				const json = await res.json()
 				const releaseDate = new Date(json.movie.release_date)
@@ -168,7 +169,7 @@ export default function EditMovie(props) {
 				setMovieMpaaRating(json.movie.mpaa_rating)
 				setMovieRating(json.movie.rating)
 				setMovieDescription(json.movie.description)
-				setIsLoaded(false)
+				setIsLoaded(true)
 			}
 		}
 
@@ -176,8 +177,8 @@ export default function EditMovie(props) {
 	}, [props.history, props.jwt, props.match.params.id])
 
 	if (error) {
-		return <p>Could not get movie</p>
-	} else if (!isLoaded) {
+		return <p>Could not get movie: {error.message}</p>
+	} else if (isLoaded) {
 		return (
 			<>
 				<h2>Add/Edit Movie</h2>

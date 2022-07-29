@@ -15,6 +15,7 @@ const MovieGraphQL = (props) => {
                 year
                 description
                 mpaa_rating
+				poster
             }
         }
         `
@@ -62,6 +63,12 @@ const MovieGraphQL = (props) => {
 				<h2>
 					Movie: {movie.title} ({movie.year})
 				</h2>
+
+				{movie.poster !== "" && (
+					<div>
+						<img src={`https://image.tmdb.org/t/p/w200${movie.poster}`} alt={`movie poster for ${movie.title}`} />
+					</div>
+				)}
 
 				<div className="float-start">
 					<small>rating: {movie.mpaa_rating}</small>
