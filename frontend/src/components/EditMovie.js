@@ -75,7 +75,7 @@ export default function EditMovie(props) {
 			headers: headers,
 		}
 
-		const res = await fetch("http://localhost:8080/v1/admin/editmovie", options)
+		const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/admin/editmovie`, options)
 		const json = await res.json()
 		console.log(json)
 		if (json.error) {
@@ -123,7 +123,7 @@ export default function EditMovie(props) {
 						headers.append("Content-Type", "application/json")
 						headers.append("Authorization", `Bearer ${props.jwt}`)
 
-						const res = await fetch("http://localhost:8080/v1/admin/deletemovie/" + movieID, {
+						const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/admin/deletemovie/` + movieID, {
 							method: "GET",
 							headers: headers,
 						})
@@ -152,7 +152,7 @@ export default function EditMovie(props) {
 		}
 		const id = props.match.params.id
 		async function fetchMovie(id) {
-			const res = await fetch("http://localhost:8080/v1/movies/" + id)
+			const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/movies/` + id)
 			console.log(res)
 			if (res.status !== 200) {
 				const err = Error

@@ -11,7 +11,7 @@ const Admin = (props) => {
 			props.history.push({ pathname: "/login" })
 		}
 		async function fetchMovies() {
-			const res = await fetch("http://localhost:8080/v1/movies")
+			const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/movies`)
 			if (res.status !== 200) {
 				const err = Error("Invalid response code: " + +res.status)
 				setError(err)

@@ -32,7 +32,7 @@ export default function GraphQL(props) {
 		}
 
 		async function fetchMovies() {
-			const res = await fetch("http://localhost:8080/v1/graphql", options)
+			const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/graphql`, options)
 			const data = await res.json()
 			const movieList = Object.values(data.data.list)
 			setMovies(movieList)
@@ -78,7 +78,7 @@ export default function GraphQL(props) {
 		}
 
 		async function fetchMovies() {
-			const res = await fetch("http://localhost:8080/v1/graphql", options)
+			const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/graphql`, options)
 			if (res.status !== 200) {
 				const err = Error("Invalid response code: " + +res.status)
 				setError(err)

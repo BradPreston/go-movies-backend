@@ -8,7 +8,7 @@ const Genres = () => {
 
 	useEffect(() => {
 		async function fetchGenres() {
-			const res = await fetch("http://localhost:8080/v1/genres")
+			const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/genres`)
 			if (res.status !== 200) {
 				const err = Error("Invalid response code: " + +res.status)
 				setError(err)

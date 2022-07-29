@@ -27,7 +27,7 @@ export default function Login(props) {
 			body: JSON.stringify(payload),
 		}
 
-		const res = await fetch("http://localhost:8080/v1/login", options)
+		const res = await fetch(`${process.env.REACT_APP_API_URL}/v1/login`, options)
 		const json = await res.json()
 		if (json.error) setAlert({ type: "alert-danger", message: json.error.message })
 		else {
